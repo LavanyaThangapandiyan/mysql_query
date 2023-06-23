@@ -1,0 +1,114 @@
+use practice;
+
+drop table web_events;
+select * from web_events;
+create table region(id int(10)auto_increment,name varchar(20)not null,primary key(id));
+insert into region values(id,'NorthEast');
+insert into region values(id,'Midwest');
+insert into region values(id,'Southeast');
+insert into region values(id,'West');
+select * from region;
+create table sales_reps(id int(10)auto_increment,name varchar(20)not null,region_id int(10),foreign key(region_id)references region(id),primary key(id) );
+INSERT INTO sales_reps VALUES (321570,'Shawanda Selke',1);
+INSERT INTO sales_reps VALUES (321580,'Sibyl Lauria',1);
+INSERT INTO sales_reps VALUES (321590,'Necole Victory',1);
+INSERT INTO sales_reps VALUES (321600,'Ernestine Pickron',1);
+INSERT INTO sales_reps VALUES (321610,'Ayesha Monica',1);
+INSERT INTO sales_reps VALUES (321620,'Retha Sears',1);
+INSERT INTO sales_reps VALUES (321630,'Julia Behrman',1);
+create table accounts(id int(20)auto_increment,name varchar(20)not null,website varchar(20)not null,lat varchar(20)not null,long_lat varchar(20)not null,primary_poc varchar(20)not null,sales_rep_id int(20),foreign key(sales_rep_id)references sales_reps(id),primary key(id));
+INSERT INTO accounts VALUES (1001,'Walmart','www.walmart.com',40.23849561,-75.10329704,'Tamara Tuma',321570);
+INSERT INTO accounts VALUES (1011,'Exxon Mobil','www.exxonmobil.com',41.1691563,-73.84937379,'Sung Shields',321580);
+INSERT INTO accounts VALUES (1021,'Apple','www.apple.com',42.29049481,-76.08400942,'Jodee Lupo',321590);
+INSERT INTO accounts VALUES (1031,'Berkshire Hathaway','www.berkshirehathaway.com',40.94902131,-75.76389759,'Serafina Banda',321600);
+INSERT INTO accounts VALUES (1041,'McKesson','www.mckesson.com',42.21709326,-75.28499823,'Angeles Crusoe',321610);
+INSERT INTO accounts VALUES (1051,'UnitedHealth Group','www.unitedhealthgroup.com',40.08792542,-75.57569396,'Savanna Gayman',321620);
+INSERT INTO accounts VALUES (1061,'CVS Health','www.cvshealth.com',41.46779585,-73.76763638,'Anabel Haskell',321630);
+
+create table orders(id int(10)auto_increment,account_id int(20)not null,occurred_at timestamp,standard_qty integer,
+gloss_qty int,poster_qty int,total int,standard_amt_usd numeric(10,2),gloss_amt_usd numeric(10,2),
+	poster_amt_usd numeric(10,2),total_amt_usd numeric(10,2), primary key(id),foreign key(account_id)references accounts(id));
+    INSERT INTO orders VALUES (1,1001,'2015-10-06 17:31:14',123,22,24,169,613.77,164.78,194.88,973.43);
+INSERT INTO orders VALUES (2,1011,'2015-11-05 03:34:33',190,41,57,288,948.1,307.09,462.84,1718.03);
+INSERT INTO orders VALUES (3,1021,'2015-12-04 04:21:55',85,47,0,132,424.15,352.03,0,776.18);
+INSERT INTO orders VALUES (4,1041,'2016-01-02 01:18:24',144,32,0,176,718.56,239.68,0,958.24);
+INSERT INTO orders VALUES (5,1041,'2016-02-01 19:27:27',108,29,28,165,538.92,217.21,227.36,983.49);
+INSERT INTO orders VALUES (5,1041,'2016-02-01 19:27:27',10,0,0,165,538.92,217.21,227.36,983.49);
+select * from orders;
+drop table orders;
+create table web_events(id int(5)auto_increment ,account_id int(20),occurred_at timestamp,channel varchar(20)not null,primary key(id),foreign key(account_id)references accounts(id));
+INSERT INTO web_events VALUES (1,1001,'2015-10-06 17:13:58','direct');
+INSERT INTO web_events VALUES (2,1001,'2015-11-05 03:08:26','direct');
+INSERT INTO web_events VALUES (3,1001,'2015-12-04 03:57:24','direct');
+INSERT INTO web_events VALUES (4,1001,'2016-01-02 00:55:03','direct');
+INSERT INTO web_events VALUES (6,1001,'2016-02-01 19:02:33','direct');
+select * from web_events;
+
+select id from orders where gloss_qty>4 and poster_qty>4;
+select  id ,account_id ,occurred_at,standard_qty ,
+gloss_qty ,poster_qty ,total,standard_amt_usd ,gloss_amt_usd ,poster_amt_usd ,total_amt_usd from orders where standard_qty=0 and gloss_qty OR  poster_qty >10;
+select name from accounts where name  REGEXP '^[W].*$' OR name  REGEXP '^[C].*$';
+select id ,account_id ,occurred_at,standard_qty ,
+gloss_qty ,poster_qty ,total,standard_amt_usd ,gloss_amt_usd ,poster_amt_usd ,total_amt_usd from orders where standard_qty=10 and gloss_qty=0 Or poster_qty=0 ;
+select name from accounts where name  NOT LIKE 'C%' AND name  NOT LIKE '%S';
+/*
+Figure out the answer to this important question by writing a query that displays the order date and
+ gloss_qty data for all orders where gloss_qty is between 24 and 29. Then look at your output to see if
+ the BETWEEN operator included the begin and end values or not.
+*/
+select  occurred_at,gloss_qty from orders where  gloss_qty BETWEEN 24 AND 29;
+/*
+Use the web_events table to find all information regarding individuals who were 
+contacted via the organic or adwords channels, and started their account at any point in 2016, 
+sorted from newest to oldest.
+*/
+
+select id,account_id, occurred_at from web_events where occurred_at BETWEEN '2016-01-01' AND '2016-12-31';
+
+/*
+Write a query to return the 10 earliest orders in the orders table.
+ Include the id, occurred_at, and total_amt_usd.
+*/
+select id,occurred_at,total_amt_usd from orders ORDER BY id ASC LIMIT 10 ;
+/*
+Write a query to return the top 5 orders in terms of largest total_amt_usd.
+Include the id, account_id, and total_amt_usd
+*/
+select id,occurred_at,total_amt_usd from orders ORDER BY id ASC LIMIT 5 ;
+/*
+Write a query to return the lowest 20 orders in terms of smallest total_amt_usd.
+Include the id, account_id, and total_amt_usd
+*/
+select id,occurred_at,total_amt_usd from orders  ORDER BY total_amt_usd   Desc LIMIT 20 ;
+/*
+Write a query that displays the order ID, account ID, and total dollar amount for all the orders,
+sorted first by the account ID (in ascending order),
+ and then by the total dollar amount (in descending order).
+*/
+select id,occurred_at,total_amt_usd from orders  ORDER BY account_id  Asc , total_amt_usd Desc ;
+/*
+Now write a query that again displays order ID, account ID, 
+and total dollar amount for each order, but this time sorted first by total dollar
+ amount (in descending order), and then by account ID (in ascending order)
+*/
+select  id,account_id,occurred_at,total_amt_usd from orders ORDER BY  total_amt_usd  Desc ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,5 +1,4 @@
 use practice;
-
 drop table web_events;
 select * from web_events;
 create table region(id int(10)auto_increment,name varchar(20)not null,primary key(id));
@@ -16,6 +15,15 @@ INSERT INTO sales_reps VALUES (321600,'Ernestine Pickron',1);
 INSERT INTO sales_reps VALUES (321610,'Ayesha Monica',1);
 INSERT INTO sales_reps VALUES (321620,'Retha Sears',1);
 INSERT INTO sales_reps VALUES (321630,'Julia Behrman',1);
+INSERT INTO sales_reps VALUES (321640,'Julia Behrman',2);
+INSERT INTO sales_reps VALUES (321650,'Julia Behrman',2);
+INSERT INTO sales_reps VALUES (321730,'Carletta Kosinski',2);
+INSERT INTO sales_reps VALUES (321740,'Charles Bidwell',2);
+INSERT INTO sales_reps VALUES (321750,'Cliff Meints',2);
+INSERT INTO sales_reps VALUES (321760,'Delilah Krum',2);
+INSERT INTO sales_reps VALUES (321770,'Kathleen Lalonde',2);
+
+
 create table accounts(id int(20)auto_increment,name varchar(20)not null,website varchar(20)not null,lat varchar(20)not null,long_lat varchar(20)not null,primary_poc varchar(20)not null,sales_rep_id int(20),foreign key(sales_rep_id)references sales_reps(id),primary key(id));
 INSERT INTO accounts VALUES (1001,'Walmart','www.walmart.com',40.23849561,-75.10329704,'Tamara Tuma',321570);
 INSERT INTO accounts VALUES (1011,'Exxon Mobil','www.exxonmobil.com',41.1691563,-73.84937379,'Sung Shields',321580);
@@ -24,6 +32,7 @@ INSERT INTO accounts VALUES (1031,'Berkshire Hathaway','www.berkshirehathaway.co
 INSERT INTO accounts VALUES (1041,'McKesson','www.mckesson.com',42.21709326,-75.28499823,'Angeles Crusoe',321610);
 INSERT INTO accounts VALUES (1051,'UnitedHealth Group','www.unitedhealthgroup.com',40.08792542,-75.57569396,'Savanna Gayman',321620);
 INSERT INTO accounts VALUES (1061,'CVS Health','www.cvshealth.com',41.46779585,-73.76763638,'Anabel Haskell',321630);
+INSERT INTO accounts VALUES (1062,'CVS Health','www.cvshealth.com',41.46779585,-73.76763638,'Anabel Haskell',321640);
 
 create table orders(id int(10)auto_increment,account_id int(20)not null,occurred_at timestamp,standard_qty integer,
 gloss_qty int,poster_qty int,total int,standard_amt_usd numeric(10,2),gloss_amt_usd numeric(10,2),
@@ -91,8 +100,86 @@ Now write a query that again displays order ID, account ID,
 and total dollar amount for each order, but this time sorted first by total dollar
  amount (in descending order), and then by account ID (in ascending order)
 */
-select  id,account_id,occurred_at,total_amt_usd from orders ORDER BY  total_amt_usd  Desc ;
+select  id,account_id,occurred_at,total_amt_usd from orders ORDER BY  total_amt_usd  Desc;
+/*
+Provide a table that provides the region for each sales_rep along with their associated accounts.
+This time only for the Midwest region.
+Your final table should include three columns: the region name, the sales rep name, and the account name. 
+Sort the accounts alphabetically (A-Z) according to account name.
+*/
+use practice;
+select 
+reg.name,
+acc.name,
+sal.name
+from 
+region reg,
+accounts acc,
+sales_reps sal
+where 
+reg.name='midwest';
+/*
+Find all the orders that occurred in 2015.
+Your final table should have 4 columns: occurred_at, account name, order total, and order total_amt_usd.
+*/
+select 
+ord.occurred_at,
+ ord.total,
+ ord.total_amt_usd,
+ acc.name
+from 
+orders ord,
+accounts acc
+where 
+acc.id=ord.account_id
+and ord.occurred_at BETWEEN '2015-01-01' AND '2015-12-31';
+/*
+What are the different channels used by account id 1001?
+Your final table should have only 2 columns: account name and the different channels.
+You can try SELECT DISTINCT to narrow down the results to only the unique values.
+*/
+select distinct
+acc.name,
+web.channel 
+ from 
+accounts acc,
+web_events web
+where 
+acc.id=web.account_id;
 
+/*Provide a table that provides the region for each sales_rep along with their associated accounts.
+This time only for accounts where the sales rep has a first name starting with S and in the Midwest region.
+Your final table should include three columns: the region name, the sales rep name, and the account name.
+Sort the accounts alphabetically (A-Z) according to account name.*/
+select 
+reg.name,
+acc.name,
+sal.name
+from 
+region reg,
+accounts acc,
+sales_reps sal
+where 
+reg.name='midwest'
+and sal.name like 's%'
+order by acc.name;
+/*Provide a table that provides the region for each sales_rep along with their associated accounts.
+This time only for accounts where the sales rep has a last name starting with K and in the Midwest region.
+Your final table should include three columns: the region name, the sales rep name, and the account name.
+Sort the accounts alphabetically (A-Z) according to account name.
+*/
+select 
+reg.name,
+acc.name,
+sal.name
+from 
+region reg,
+accounts acc,
+sales_reps sal
+where 
+sal.name like '% K%'
+and reg.name='midwest'
+order by acc.name;
 
 
 
